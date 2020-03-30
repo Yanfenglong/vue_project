@@ -1,46 +1,92 @@
 <template>
-    <el-container>
-        <el-header>
+    <el-container class="home-container">
+        <el-header >
             <div>
-                <img src="../assets/logo.png" style="width: 50px; height: 50px">
-                <span>Management System</span>
-            </div>
-            <el-button type="info">Logout</el-button>
+                <img src="../assets/logo.png">
+                <span>电商后台管理系统</span></div>
+            <el-button type="info" @click="logout">退出</el-button>
         </el-header>
-        <el-container>
-
-            <el-aside :width= "isCollapse ? '50px':'200px'">
+        <el-container >
+            <el-aside :width="isCollapse ?'64px': '200px'">
+                <!--侧边栏菜单区-->
                 <div class="toggle-button" @click="toggleCollapse">|||</div>
-                <el-menu
-                        background-color="#545c64"
-                        text-color="#fff"
-                        active-text-color="#ffd04b">
-                    <el-submenu index="1">
+                <el-menu :collapse="isCollapse" :collapse-transition="false"
+                         background-color="#333744"
+                         text-color="#fff"
+                         active-text-color="#ffd04b" :unique-opened="isCollapse"
+                         :router="true"
+                         :default-active="activePath"
+                >
+                    <!--:router为侧边栏开启路由模式-->
+                    <!--一级菜单-->
+                    <el-submenu :index="item.id+' '" v-for="item in menuList" :key="item.id">
                         <template slot="title">
-                            <i class="el-icon-location"></i>
-                            <span>导航一</span>
+                            <i :class="iconsObj[item.id]"></i>
+                            <span style="margin-left: 10px">{{item.authName}}</span>
                         </template>
-                            <el-menu-item index="1-1">选项1</el-menu-item>
-                            <el-menu-item index="1-2">选项2</el-menu-item>
+                        <!--&lt;!&ndash;二级菜单&ndash;&gt;-->
+                        <el-menu-item
+                                :index="'/'+subItem.path" v-for="subItem in item.children" :key="subItem.id"
+                                @click="saveNavState('/' + subItem.path)">
+                            <template slot="title" >
+                                <i class="el-icon-menu"></i>
+                                <span>{{subItem.authName}}</span>
+                            </template>
+                        </el-menu-item>
+                        <!-- 二级菜单 -->
+
                     </el-submenu>
                 </el-menu>
             </el-aside>
-            <el-main>Main</el-main>
+            <el-main>
+                <!-- 路由占位符 -->
+                <router-view></router-view>
+            </el-main>
         </el-container>
     </el-container>
 </template>
 
 <script>
     export default {
-        name: "Home",
         data(){
-          return {
-              isCollapse:false
-          }
+            return {
+                //cai dan shuju
+                menuList:[],
+                iconsObj:{
+                    '125': 'iconfont icon-user',
+                    '103': 'iconfont icon-tijikongjian',
+                    '101': 'iconfont icon-shangpin',
+                    '102': 'iconfont icon-danju',
+                    '145': 'iconfont icon-baobiao'
+                },
+                isCollapse:false,
+                activePath:''
+            }
+        },
+        created(){
+            this.getMenuList();
+            this.activePath = window.sessionStorage.getItem('activePath')
         },
         methods:{
+            //行为区
+            logout(){
+                window.sessionStorage.clear();
+                this.$router.push('/login')
+            },
+            //获取菜单使用的是get，返回的是promise，为了简化使用async
+            async getMenuList(){
+                const {data:res} = await this.$http.get('menus');
+                if (res.meta.status !== 200){ return this.$message.error(res.meta.msg)}
+                this.menuList = res.data
+                //console.log(res)
+            },
             toggleCollapse(){
-             this.isCollapse = !this.isCollapse
+                this.isCollapse= !this.isCollapse
+            },
+            saveNavState(activePath){
+                //  console.log("activePath按钮点击"+activePath)
+                window.sessionStorage.setItem('activePath',activePath)
+                this.activePath = activePath
             }
         }
     }
@@ -48,34 +94,38 @@
 
 <style scoped>
     .toggle-button{
-        background: #4A5064;
-        font-size: 14px;
+        background-color: #4A5064 ;
+        font-size: 10px;
         line-height: 24px;
+        color: #FFF;
         letter-spacing: 0.2em;
         text-align: center;
-        color: #FFF;
+        cursor: pointer;
     }
-.el-container{
-    height: 100%;
-}
+    .home-container{
+        height: 100%;
+    }
     .el-header{
-        background: #373d41;
+        background-color: #373d41 ;
         display: flex;
         justify-content: space-between;
+        padding-left: 0px;
+        align-items: center;
         color: #FFF;
         font-size: 20px;
-        align-items: center;
-        padding-left: 0px;
     }
     .el-header div{
         display: flex;
         align-items: center;
-        margin-left: 20px;
     }
     .el-aside{
-        background: #333744;
+        background-color: #333744;
+
+    }
+    .el-aside .el-menu{
+        border-right: none;
     }
     .el-main{
-        background: #eaedf1;
+        background-color: #eaedf1;
     }
 </style>
