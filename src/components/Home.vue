@@ -1,9 +1,9 @@
 <template>
     <el-container class="home-container">
         <el-header >
-            <div>
-                <img src="../assets/logo.png">
-                <span>电商后台管理系统</span></div>
+            <div style="margin-left: 20px">
+                <img src="../assets/logo.png" style="width:32px;height: 32px;">
+                <span>ManageMent System</span></div>
             <el-button type="info" @click="logout">退出</el-button>
         </el-header>
         <el-container >
