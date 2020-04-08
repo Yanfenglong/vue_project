@@ -47,7 +47,7 @@
                     //And get response from server
                     console.log(res)
                     //jump to another page
-                    window.sessionStorage.setItem('token',res.data.token)
+                   window.sessionStorage.setItem('token',res.data.token)
                     this.$router.push('/home')
                 })
             },

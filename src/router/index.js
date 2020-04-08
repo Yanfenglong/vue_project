@@ -8,6 +8,8 @@ import Users from "../components/user/Users"
 import Rights from  "../components/power/Rights"
 import Roles from  "../components/power/Roles"
 import Cate from  "../components/goods/Cate"
+import List from "../components/goods/List"
+import Add from  "../components/goods/Add"
 Vue.use(VueRouter)
 
 const routes = [
@@ -20,16 +22,9 @@ const routes = [
       {path: '/rights',component: Rights},
       {path: '/roles',component: Roles},
       {path: '/categories',component: Cate},
+      {path: '/goods',component: List},
+      {path: '/goods/add',component: Add},
     ]},
-
-  // {
-  //   path: '/about',
-  //   name: 'About',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  // }
 ]
 
 const index = new VueRouter({
