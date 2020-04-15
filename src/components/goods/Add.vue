@@ -15,7 +15,7 @@
                 <el-step title="商品内容"></el-step>
                 <el-step title="完成"></el-step>
             </el-steps>
-            <el-form :model="addForm" ref="addFormRef" :rules="addFormRules" label-width="100px" label-position="top">
+            <el-form :model="addForm" ref="addFormRef" :rules="addFormRules"  label-width="100px" label-position="top">
                 <el-tabs :tab-position="'left'" v-model="activeIndex" :before-leave="beforeTabLeave"
                          @tab-click="tabClick">
                     <el-tab-pane label="基本信息" name="0">
@@ -76,6 +76,7 @@
     </div>
 </template>
 <script>
+    import _ from  'lodash'
     export default {
         name: "Add",
         data() {
@@ -135,11 +136,35 @@
             this.getCateList()
         },
         methods: {
-            async add() {
+             add() {
                 //向后台提交数据submit the goods information to the server
                 console.log("1111111")
-                const {data: res} = await this.$http.post("goods", form)
-
+                 this.$ref.addFormRef.validate(async valid=>{
+                     if (!valid) {
+                         this.$message.error("Please input all the information correctly")
+                     }
+                     //Then get data and transform data to server
+                    const form = _.cloneDeep(this.addForm)
+                     //Use deep copy to change the structure from Array [] to String "1,2,3"
+                     form.goods_cat = form.goods_cat.join(',')  //add comma after each array item ,then it is String
+                     this.manyTableData.forEach(item =>{
+                         const newInfo ={
+                             attr_id:item.attr_id,
+                             attr_value:item.attr_value.join(' ')
+                         }
+                         this.addForm.attrs.push(newInfo)
+                     })
+                     this.onlyTableData.forEach(item=>{
+                         const newInfo ={
+                             attr_id:item.attr_id,
+                             attr_value:item.attr_value
+                         }
+                         this.addForm.attrs.push(newInfo)
+                     })
+                     form.attrs = this.addForm.attrs
+                     const {data: res} = await this.$http.post("goods", form)
+                     this.$router.push('./goods')
+                 })
             },
             handleOnSuccess(response) {
                 // console.log(response)
