@@ -10,6 +10,7 @@ import Roles from  "../components/power/Roles"
 import Cate from  "../components/goods/Cate"
 import List from "../components/goods/List"
 import Add from  "../components/goods/Add"
+import Report from  "../components/report/Report"  //GRAY
 Vue.use(VueRouter)
 
 const routes = [
@@ -24,6 +25,7 @@ const routes = [
       {path: '/categories',component: Cate},
       {path: '/goods',component: List},
       {path: '/goods/add',component: Add},
+      {path:'/reports',component:Report}
     ]},
 ]
 

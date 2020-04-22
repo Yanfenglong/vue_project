@@ -55,7 +55,7 @@
                     </el-tab-pane>
                     <el-tab-pane label="商品图片" name="3">
                         <el-upload
-                                action="uploadUrl"
+                                :action="uploadUrl"
                                 :headers="headerObj"
                                 :on-preview="handlePreview"
                                 :on-success="handleOnSuccess"
@@ -81,7 +81,7 @@
         name: "Add",
         data() {
             return {
-                proviewpath: '',
+                proviewPath: '',
                 goods_introduce: '',
                 addFormRules: {
                     goods_name: [
@@ -100,8 +100,8 @@
                 },
                 headerObj: {
                     Authorization: window.sessionStorage.getItem('token')
-                },
-                uploadUrl: "http://127.0.0.1:8888/api/private/v1/upload",
+                },//上传图片的请求头对象
+                uploadUrl: 'http://127.0.0.1:8888/api/private/v1/upload',
                 previewVisible: false,
                 activeIndex: '0',
                 catelist: [],
@@ -112,7 +112,7 @@
                 },
                 addForm: {
                     goods_name: '',//default value ,we get new value from the input table,so we can change these
-                    goods_cat: [],
+                    goods_cat: [1, 3, 6 ],
                     goods_price: 0,
                     goods_number: 0,
                     goods_weight: 0,
@@ -138,8 +138,8 @@
         methods: {
              add() {
                 //向后台提交数据submit the goods information to the server
-                console.log("1111111")
-                 this.$ref.addFormRef.validate(async valid=>{
+
+                 this.$refs.addFormRef.validate(async valid=>{
                      if (!valid) {
                          this.$message.error("Please input all the information correctly")
                      }
@@ -150,19 +150,25 @@
                      this.manyTableData.forEach(item =>{
                          const newInfo ={
                              attr_id:item.attr_id,
-                             attr_value:item.attr_value.join(' ')
+                             attr_value:item.attr_vals.join(' ')
                          }
                          this.addForm.attrs.push(newInfo)
                      })
                      this.onlyTableData.forEach(item=>{
                          const newInfo ={
                              attr_id:item.attr_id,
-                             attr_value:item.attr_value
+                             attr_value:item.attr_vals
                          }
                          this.addForm.attrs.push(newInfo)
                      })
                      form.attrs = this.addForm.attrs
                      const {data: res} = await this.$http.post("goods", form)
+                     console.log(res)
+                     if (res.meta.status !== 201) {
+                         return this.$message.error('商品数据添加失败！')
+                     }
+                     this.$message.success('商品数据添加成功！')
+
                      this.$router.push('./goods')
                  })
             },
@@ -173,7 +179,7 @@
             },
             handlePreview(file) {
                 console.log(file)
-                this.proviewpath = file.response.data.url
+                this.proviewPath = file.response.data.url
                 this.previewVisible = true
             },
             async tabClick() {
@@ -198,6 +204,7 @@
                 if (this.addForm.goods_cat.length !== 3) {
                     this.addForm.goods_cat = []
                 }
+
             },
             async getCateList() {
                 const {data: res} = await this.$http.get("categories")
