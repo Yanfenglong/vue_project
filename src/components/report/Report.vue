@@ -26,7 +26,7 @@ export default{
                     axisPointer: {
                         type: 'cross',
                         label: {
-                            backgroundColor: '#E9EEF3'
+                            backgroundColor: '#2861f3'
                         }
                     }
                 },
